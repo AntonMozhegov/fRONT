@@ -1,33 +1,190 @@
+.mainContainer {
+  position: relative;
+  background: linear-gradient(135deg, #0A0A0A, #1a1a1a);
+  color: #FFFFFF;
+  min-height: 100vh;
+  padding: 40px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &::before {
+    content: '💡 📘 🎓 🧪 🧠 💻 📚 🔬 📝';
+    position: absolute;
+    font-size: 80px;
+    opacity: 0.05;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    animation: emojiDance 60s linear infinite;
+    white-space: pre-wrap;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes emojiDance {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(50%, 50%) rotate(360deg);
+  }
+}
+
 .mainTitle {
+  font-size: 2.5rem;
   text-align: center;
+  margin: 20px 0;
+  z-index: 1;
+  position: relative;
+  background: linear-gradient(to right, #ffffff, #b0b0b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 700px;
+  width: 100%;
+  z-index: 1;
+  position: relative;
 }
 
 .lectureLi {
   display: flex;
   align-items: center;
-}
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 
-.index, .lectureLink {
-  font-weight: 500;
-  font-size: 18px;
-  padding: 5px;
-  border: 1px solid white;
-  display: block;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  &:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 .index {
-  width: 30px;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 8px;
+  min-width: 40px;
   text-align: center;
+  background: #2D2D2D;
+  border-radius: 12px;
+  margin-right: 15px;
+  color: #B0B0B0;
 }
 
 .lectureLink {
+  font-size: 18px;
+  color: #FFFFFF;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: color 0.3s ease;
   width: 100%;
-  margin-left: 10px;
-  transition: .2s;
 
   &:hover {
-    background: rgba(56, 56, 56, 0.74);
+    color: #B0B0B0;
+  }
+}
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  box-shadow: 0 0 0 transparent;
+
+  &:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+}
+.emojiBurstContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.burstEmoji {
+  position: absolute;
+  font-size: 24px;
+  animation: flyUp 1.5s ease-out forwards;
+  opacity: 0.8;
+  user-select: none;
+}
+
+@keyframes flyUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.3);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-120px) scale(0.6);
+    opacity: 0;
+  }
+}
+.linkWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.fountainWrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+  width: 0;
+  height: 100%;
+}
+
+.fountainEmoji {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-size: 36px;
+  animation: emojiFountain 1s ease-out forwards;
+  user-select: none;
+  pointer-events: none;
+}
+
+@keyframes emojiFountain {
+  0% {
+    transform: translate(0, -50%) scale(1);
+    opacity: inherit; // Используем начальную opacity
+  }
+  100% {
+    transform: translate(100px, -120px) rotate(20deg) scale(0.6);
+    opacity: 0;
   }
 }
