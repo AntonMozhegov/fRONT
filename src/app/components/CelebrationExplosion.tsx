@@ -5,7 +5,14 @@ import styles from './CelebrationExplosion.module.scss';
 const EMOJIS = ['🎉', '🎊', '🪅', '🎈', '✨', '🥳'];
 
 export default function CelebrationExplosion() {
-    const [explosions, setExplosions] = useState([]);
+    type Explosion = {
+        id: number;
+        emoji: string;
+        left: number;
+        delay: number;
+    };
+
+    const [explosions, setExplosions] = useState<Explosion[]>([]);
 
     useEffect(() => {
         const tempExplosions = Array.from({ length: 60 }, (_, i) => ({
