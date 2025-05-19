@@ -11,11 +11,11 @@ import EmojiFountain from './components/EmojiFountain';
 import CelebrationExplosion from './components/CelebrationExplosion';
 
 export default function HomePage() {
-    const [activeFountain, setActiveFountain] = useState<number | null>(null);
+    const [activeFountain, setActiveFountain] = useState<string | null>(null); // Changed to string | null
     const [showCelebration, setShowCelebration] = useState(false);
     const router = useRouter();
 
-    const handleHover = (id: number) => {
+    const handleHover = (id: string) => { // Changed parameter type to string
         setActiveFountain(id);
     };
 
