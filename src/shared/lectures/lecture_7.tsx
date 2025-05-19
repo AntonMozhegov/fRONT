@@ -1,90 +1,176 @@
-export const lecture_7 = `<h1>Сравнение современных фронтенд-фреймворков: производительность, экосистема и удобство разработки</h1>
+export const lecture_7 = `
+<div class="lecture-container">
+  <h1>Лекция 7: Написание пользовательских SQL запросов в Java</h1>
 
-<p>Современные веб-приложения предъявляют всё более высокие требования к производительности, гибкости и качеству взаимодействия с пользователем. С ростом числа устройств и разнообразием пользовательских сценариев важно создавать интерфейсы, способные быстро откликаться на действия, масштабироваться и быть легко сопровождаемыми. Одним из важнейших факторов, влияющих на достижение этих целей, является выбор фронтенд-фреймворка. Сегодня наибольшее распространение получили такие решения, как React, Vue.js, Angular и Svelte. Каждый из них представляет собой зрелую технологию со своими архитектурными особенностями, принципами работы и экосистемой.</p>
-<p>Настоящая лекция направлена на проведение комплексного сравнительного анализа указанных фреймворков. В центре внимания окажутся три ключевых аспекта: производительность, экосистема (включая поддержку сообществом) и удобство разработки. Особое внимание будет уделено контексту практического применения: какие проекты лучше реализовывать с помощью каждого из инструментов и почему.</p>
+  <p>Основные подходы к созданию запросов в Java включают: автоматически генерируемые запросы из имени метода, аннотацию @Query для JPQL и нативных SQL запросов, Specification API для динамических запросов, QueryDSL для типобезопасных запросов и нативные запросы через EntityManager. Рассмотрим каждый из этих подходов подробно.</p>
 
-<h2>Производительность: архитектурные подходы и реальные различия</h2>
-<p>Производительность веб-приложений зависит от множества факторов: от архитектуры рендеринга до моделей обновления состояния и работы с DOM. Рассмотрим особенности реализации этих аспектов в каждом из фреймворков.</p>
+  <h2>Автоматически генерируемые запросы</h2>
+  <p>Spring Data JPA может автоматически генерировать запросы на основе имен методов репозитория. Это самый простой способ, не требующий написания JPQL или SQL.</p>
+  
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // Найти по email
+    User findByEmail(String email);
+    // Найти всех с фамилией, игнорируя регистр
+    List&lt;User&gt; findByLastNameIgnoreCase(String lastName);
+    // Найти по имени и фамилии
+    List&lt;User&gt; findByFirstNameAndLastName(String firstName, String lastName);
+    // Найти пользователей с зарплатой больше указанной
+    List&lt;User&gt; findBySalaryGreaterThan(BigDecimal salary);
+    // Найти пользователей с зарплатой в диапазоне
+    List&lt;User&gt; findBySalaryBetween(BigDecimal minSalary, BigDecimal maxSalary);
+    // Найти по подстроке в имени
+    List&lt;User&gt; findByFirstNameContaining(String pattern);
+    // Посчитать количество пользователей с указанной фамилией
+    long countByLastName(String lastName);
+    // Удалить пользователей по фамилии
+    void deleteByLastName(String lastName);
+}</code></pre>
 
-<h3>React</h3>
-<p>React основан на концепции виртуального DOM, который позволяет минимизировать количество прямых обращений к реальному DOM, тем самым ускоряя рендеринг. Виртуальное представление дерева элементов сравнивается с предыдущим состоянием (<em>diffing</em>), после чего в реальный DOM вносятся только необходимые изменения.</p>
-<p>Этот подход хорошо масштабируется, особенно в крупных приложениях с большим числом компонентов. Однако при неэффективном управлении состоянием (например, чрезмерных ререндерингах) производительность может страдать. Поэтому в React особенно важно использовать инструменты оптимизации, и контролировать данные, которые приводят к ререндерингу.</p>
+  <h3>Поддержка сортировки и пагинации</h3>
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // Сортировка по одному полю
+    List&lt;User&gt; findByLastNameOrderByFirstNameAsc(String lastName);
+    // Сортировка по нескольким полям
+    List&lt;User&gt; findByLastNameOrderByFirstNameAscSalaryDesc(String lastName);
+    // Пагинация
+    Page&lt;User&gt; findByLastName(String lastName, Pageable pageable);
+    // Сортировка через параметр Sort
+    List&lt;User&gt; findByLastName(String lastName, Sort sort);
+}
 
-<h3>Vue.js</h3>
-<p>Vue.js использует похожую архитектуру с виртуальным DOM, но дополняет её встроенной реактивной системой, которая отслеживает зависимости данных и автоматически обновляет только те части интерфейса, которые зависят от изменённых данных. Это позволяет достичь высокой производительности даже в динамичных приложениях.</p>
-<p>Vue показывает отличные результаты в проектах малого и среднего размера. Благодаря лёгкости его ядра, Vue требует меньше ресурсов, чем React, и быстрее работает из коробки без необходимости в сложной настройке.</p>
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+    
+    public Page&lt;User&gt; getUsersByLastName(String lastName, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("firstName").ascending());
+        return userRepository.findByLastName(lastName, pageRequest);
+    }
+}</code></pre>
 
-<h3>Angular</h3>
-<p>Angular реализует двустороннюю привязку данных, что позволяет автоматически синхронизировать данные между моделью и представлением. Такая архитектура удобна, но требует дополнительной вычислительной нагрузки, особенно при большом количестве привязок.</p>
-<p>Angular нередко критикуется за избыточность и относительную тяжеловесность. Однако, при правильной настройке, он демонстрирует стабильную производительность в крупных корпоративных системах, благодаря оптимизациям на уровне сборки и продвинутым механизмам управления зависимостями.</p>
+  <h2>Аннотация @Query для JPQL и нативных запросов</h2>
+  <p>Когда автоматически генерируемых запросов недостаточно, можно использовать аннотацию <code>@Query</code>.</p>
 
-<h3>Svelte</h3>
-<p>Svelte представляет собой фреймворк нового поколения, который отказывается от виртуального DOM. Вместо этого, он компилирует компоненты в чистый JavaScript-код на этапе сборки. Скомпилированный код напрямую обновляет DOM в нужных местах, без посредников.</p>
-<p>Такой подход даёт максимальную производительность, минимизируя накладные расходы на обновление интерфейса. Особенно ярко преимущества Svelte проявляются в мобильных и ресурсоограниченных средах, а также в SPA с частыми изменениями состояния.</p>
+  <h3>JPQL запросы</h3>
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // Простой JPQL запрос
+    @Query("SELECT u FROM User u WHERE u.email = ?1")
+    User findByEmailAddress(String email);
+    
+    // Именованные параметры
+    @Query("SELECT u FROM User u WHERE u.firstName = :firstName OR u.email = :email")
+    List&lt;User&gt; findByFirstNameOrEmail(@Param("firstName") String firstName, @Param("email") String email);
+    
+    // JOIN в JPQL
+    @Query("SELECT u FROM User u JOIN u.department d WHERE d.name = :departmentName")
+    List&lt;User&gt; findByDepartmentName(@Param("departmentName") String departmentName);
+    
+    // Модифицирующий запрос
+    @Modifying
+    @Query("UPDATE User u SET u.salary = u.salary * 1.1 WHERE u.department.id = :deptId")
+    int giveRaiseToDepartment(@Param("deptId") Long departmentId);
+}</code></pre>
 
+  <h3>Нативные SQL запросы</h3>
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // Нативный запрос
+    @Query(value = "SELECT * FROM users WHERE email = ?1", nativeQuery = true)
+    User findByEmailNative(String email);
+    
+    // Нативный запрос с JOIN
+    @Query(value = "SELECT u.* FROM users u JOIN departments d ON u.department_id = d.id WHERE d.name = :departmentName", nativeQuery = true)
+    List&lt;User&gt; findByDepartmentNameNative(@Param("departmentName") String departmentName);
+    
+    // Нативный модифицирующий запрос
+    @Modifying
+    @Query(value = "UPDATE users SET salary = salary * 1.1 WHERE department_id = :deptId", nativeQuery = true)
+    int giveRaiseToDepartmentNative(@Param("deptId") Long departmentId);
+}</code></pre>
 
+  <h3>Проекции (DTO)</h3>
+  <pre><code>// Интерфейсная проекция
+public interface UserNameOnly {
+    String getFirstName();
+    String getLastName();
+}
 
-<h2>Экосистема и сообщество: поддержка и ресурсы</h2>
-<p>Широкая экосистема и активное сообщество существенно упрощают разработку, отладку и сопровождение проектов. При возникновении ошибки чаще всего можно найти готовое решение в обсуждениях на форумах или репозиториях — многие сталкиваются с похожими проблемами и уже делятся способами их устранения. А когда требуется реализовать нестандартный интерфейс, доступны готовые пакеты и плагины, которые написали и поддерживают другие разработчики. Это позволяет сосредоточиться на бизнес-логике, а не тратить время на изобретение колеса или интеграцию множества разрозненных библиотек.</p>
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // Проекция через интерфейс
+    @Query("SELECT u.firstName as firstName, u.lastName as lastName FROM User u WHERE u.department.id = :deptId")
+    List&lt;UserNameOnly&gt; findUserNamesByDepartmentId(@Param("deptId") Long departmentId);
+}</code></pre>
 
-<h3>React</h3>
-<p>React, разработанный и поддерживаемый Facebook, обладает одной из самых обширных и хорошо развитых экосистем. Он служит основой для многих популярных библиотек и инструментов, включая:</p>
-<ul>
-  <li><strong>Next.js</strong> — для серверного рендеринга и гибридных приложений;</li>
-  <li><strong>Redux</strong> — для управления состоянием;</li>
-  <li><strong>React Router</strong> — для маршрутизации.</li>
-</ul>
-<p>Сообщество React чрезвычайно активно, количество ресурсов для обучения огромно. Благодаря этой поддержке React остаётся отличным выбором как для начинающих, так и для опытных разработчиков.</p>
+  <h2>Specification API для динамических запросов</h2>
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt;, JpaSpecificationExecutor&lt;User&gt; {
+}
 
-<h3>Vue.js</h3>
-<p>Vue.js изначально был ориентирован на простоту и постепенное внедрение. Его экосистема уступает React по объёму, но сохраняет высокую полноту. В ядро входят:</p>
-<ul>
-  <li><strong>Vue Router</strong>;</li>
-  <li><strong>Vuex</strong> (или более современный <strong>Pinia</strong>);</li>
-  <li><strong>Vue CLI</strong> и <strong>Vite</strong>.</li>
-</ul>
-<p>Сообщество Vue активно развивается. Особенно популярен фреймворк в странах Азии, но он набирает известность и в глобальном масштабе. Документация Vue считается одной из самых доступных среди всех фреймворков.</p>
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+    
+    public List&lt;User&gt; findUsersByCriteria(String firstName, String lastName, BigDecimal minSalary) {
+        return userRepository.findAll((root, query, cb) -> {
+            List&lt;Predicate&gt; predicates = new ArrayList&lt;&gt;();
+            if (firstName != null) {
+                predicates.add(cb.like(root.get("firstName"), "%" + firstName + "%"));
+            }
+            if (lastName != null) {
+                predicates.add(cb.equal(root.get("lastName"), lastName));
+            }
+            if (minSalary != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("salary"), minSalary));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        });
+    }
+}</code></pre>
 
-<h3>Angular</h3>
-<p>Angular предоставляет всё в одном — от роутинга до форм и валидации. Это делает его особенно привлекательным для организаций, которым важна стандартизация. Фреймворк активно развивается под эгидой Google и имеет чёткий цикл выпусков и долгосрочную поддержку.</p>
-<p>Благодаря встроенной поддержке TypeScript, Angular идеально подходит для крупных команд и проектов, где важны масштабируемость и предсказуемость.</p>
+  <h2>QueryDSL для типобезопасных запросов</h2>
+  <pre><code>public interface UserRepository extends JpaRepository&lt;User, Long&gt;, QuerydslPredicateExecutor&lt;User&gt; {
+}
 
-<h3>Svelte</h3>
-<p>Svelte сравнительно недавно появился на рынке, поэтому его экосистема изначально была компактнее, чем у более зрелых решений. Тем не менее за последние годы интерес к Svelte неуклонно растёт: разработчики всё чаще делятся готовыми компонентами, плагинами и шаблонами, а на GitHub и в тематических чатах появляется всё больше обсуждений и примеров использования.</p>
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+    
+    public List&lt;User&gt; findUsersByQueryDsl(String firstName, String lastName) {
+        QUser user = QUser.user;
+        BooleanBuilder predicate = new BooleanBuilder();
+        if (firstName != null) {
+            predicate.and(user.firstName.containsIgnoreCase(firstName));
+        }
+        if (lastName != null) {
+            predicate.and(user.lastName.eq(lastName));
+        }
+        return (List&lt;User&gt;) userRepository.findAll(predicate);
+    }
+}</code></pre>
 
-<p>В центре этой экосистемы находится <strong>SvelteKit</strong> — официальный мета-фреймворк, который упрощает настройку маршрутизации, серверный рендеринг и сборку приложений. Вместо того чтобы искать множество отдельных библиотек, вы получаете единый инструмент с понятными соглашениями. SvelteKit автоматически генерирует маршруты на основе структуры папок и поддерживает подключение «адаптеров» — небольших плагинов, позволяющих адаптировать приложение под разные платформы развертывания (например, Vercel, Netlify, Cloudflare Workers). Благодаря этому ваш код остаётся одинаковым, а SvelteKit заботится о том, чтобы он корректно работал в выбранном окружении.</p>
+  <h2>Нативные запросы через EntityManager</h2>
+  <pre><code>@Repository
+public class CustomUserRepositoryImpl implements CustomUserRepository {
+    @PersistenceContext
+    private EntityManager em;
+    
+    @Override
+    public List&lt;User&gt; findCustomUsers() {
+        return em.createNativeQuery("SELECT * FROM users WHERE salary > 1000", User.class).getResultList();
+    }
+}</code></pre>
 
-<p>Активность сообщества Svelte проявляется не только в количестве открытых репозиториев, но и в регулярных обучающих материалах: вебинары, статьи, видеоуроки и курсы. Это позволяет начинающим быстро освоить фреймворк, а опытным разработчикам — обмениваться знаниями и вносить свой вклад в развитие экосистемы. За счёт сочетания лаконичности синтаксиса, минимального рантайма и единой экосистемы Svelte облегчает прототипирование и ускоряет вывод продукта на рынок.</p>
-
-
-
-<h2>Удобство разработки: синтаксис, инструменты и опыт</h2>
-<p>При выборе фреймворка важно понимать, как его синтаксис и инструменты влияют на ежедневную работу команды. Рассмотрим отличия в подходах и встроенных возможностях разных решений.</p>
-
-<h3>React</h3>
-<p>В отличие от Vue, где шаблонный синтаксис разделяет разметку и логику, React использует JSX — смесь JavaScript и HTML в одном файле. Это даёт полную гибкость, но требует более явной настройки: управление состоянием через <code>useState</code>, побочные эффекты через <code>useEffect</code> и контекст через <code>useContext</code>. По сравнению с Angular, React не навязывает строгий порядок файлов и не предоставляет встроенной CLI-генерации кода, однако подключаемые инструменты (<strong>Create React App</strong>, <strong>Next.js</strong>, <strong>Jest</strong>, <strong>React DevTools</strong>) позволяют настроить удобную среду под любые нужды.</p>
-
-<h3>Vue.js</h3>
-<p>В отличие от React, Vue разделяет шаблон, скрипты и стили на уровне <code>.vue</code>-файла, что делает код более декларативным и менее многословным. По сравнению с Angular, Vue не требует обязательной TypeScript-конфигурации и быстрее стартует благодаря <strong>Vue CLI</strong> или <strong>Vite</strong>, требующим минимум настроек. В отличие от Svelte, где реактивность задаётся присваиванием переменных, Vue предоставляет знакомые для многих computed-свойства и watch, упрощая переход с классических MVVM-фреймворков.</p>
-
-<h3>Angular</h3>
-<p>Angular предлагает строже типизированный и структурированный подход, недоступный в React и Vue «из коробки»: обязательная работа с TypeScript даёт автодополнение и проверку типов на этапе компиляции. В отличие от React и Svelte, Angular сразу генерирует сервисы, компоненты и модули через <strong>Angular CLI</strong>, что стандартизирует кодовую базу. Зато по сравнению с Vue и Svelte начальная кривая обучения круче из-за большого набора встроенных концепций (DI, RxJS, шаблонные директивы).</p>
-
-<h3>Svelte</h3>
-<p>В отличие от React и Vue, Svelte минимизирует boilerplate и почти полностью убирает синтаксические конструкции для работы с состоянием и эффектами: реактивные переменные обновляются автоматически через присваивание. По сравнению с Angular, где проект строится из модулей и сервисов, Svelte позволяет писать компоненты в одном файле с простым синтаксисом, без сложных CLI-генераций. При этом, как и Vue, Svelte поддерживает scoped CSS и интеграцию с Vite, но не требует дополнительных плагинов для базовой работы.</p>
-
-<h2>Вопросы</h2>
-<ol>
-  <li>Какие архитектурные различия существуют между подходами к рендерингу в React и Svelte, и как они влияют на производительность приложений?</li>
-  <li>В чём заключается принципиальное преимущество реактивной системы Vue.js по сравнению с виртуальным DOM, используемым в React?</li>
-  <li>Какие особенности архитектуры Angular способствуют масштабируемости, но могут негативно сказываться на производительности?</li>
-  <li>Объясните, каким образом отказ Svelte от виртуального DOM влияет на скорость обновления интерфейса и объём сгенерированного кода.</li>
-  <li>Как зрелость и размер экосистемы фреймворка влияют на эффективность разработки и сопровождения проекта? Приведите примеры.</li>
-  <li>Сравните подходы к обучению и входу в технологию во фреймворках React, Vue.js и Angular. Какие факторы делают один из них более доступным для начинающих?</li>
-  <li>Почему Angular считается более подходящим выбором для крупных корпоративных приложений, несмотря на его сложность?</li>
-  <li>Какие инструменты входят в экосистему React и как они расширяют возможности базового фреймворка?</li>
-  <li>Чем обусловлен интерес разработчиков к Svelte, несмотря на его менее развитую экосистему по сравнению с React и Vue?</li>
-  <li>На какие критерии следует опираться при выборе фронтенд-фреймворка для нового проекта, и как они соотносятся с характеристиками рассматриваемых решений?</li>
-</ol>
-
+  <h2>Заключение</h2>
+  <p>Spring Data JPA предлагает множество способов создания запросов: от простых автоматически генерируемых до сложных динамических с Specification API и QueryDSL. Выбор метода зависит от сложности запроса и требований к гибкости и типобезопасности. Использование правильного подхода позволяет эффективно работать с данными, минимизируя boilerplate-код и снижая вероятность ошибок.</p>
+</div>
 `;
