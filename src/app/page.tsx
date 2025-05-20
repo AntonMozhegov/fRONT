@@ -11,11 +11,11 @@ import EmojiFountain from './components/EmojiFountain';
 import CelebrationExplosion from './components/CelebrationExplosion';
 
 export default function HomePage() {
-    const [activeFountain, setActiveFountain] = useState<string | null>(null); // Changed to string | null
+    const [activeFountain, setActiveFountain] = useState<string | null>(null);
     const [showCelebration, setShowCelebration] = useState(false);
     const router = useRouter();
 
-    const handleHover = (id: string) => { // Changed parameter type to string
+    const handleHover = (id: string) => {
         setActiveFountain(id);
     };
 
@@ -42,6 +42,18 @@ export default function HomePage() {
                     🧪 Тестирование
                 </button>
             </div>
+
+            {/* 📘 Аннотация курса */}
+            <section className={styles.annotationSection}>
+                <h1 className={styles.courseTitle}>Курс: <strong>Работа с базами данных в Java</strong></h1>
+                <p className={styles.courseDescription}>
+                    <b>Аннотация:</b> Курс посвящён современным подходам к работе с базами данных и их интеграции в Java-приложения.
+                    В ходе обучения рассматриваются основы проектирования и управления базами данных,
+                    подключение к ним с использованием <strong>JDBC</strong>, а также методы эффективного выполнения SQL-запросов.
+                    Особое внимание уделяется обеспечению <strong>целостности данных</strong>,
+                    <strong>оптимизации запросов</strong> и повышению производительности при взаимодействии Java-приложений с СУБД.
+                </p>
+            </section>
 
             <h1 className={styles.mainTitle}>🎓 Лекции</h1>
             <ul className={styles.list}>
