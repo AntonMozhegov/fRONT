@@ -1,7 +1,7 @@
 export const lab_1 = `
 <h1>Лабораторная работа 1: Развертывание PostgreSQL в Docker и подключение к БД через IntelliJ IDEA</h1>
 
-<h2>1.1. Проверка и установка Docker</h2>
+
 <ol>
   <li>Откройте терминал (Linux/macOS) или командную строку/PowerShell (Windows)</li>
   <li>Проверьте наличие Docker, выполнив команду:<br/><code>docker --version</code></li>
@@ -14,7 +14,7 @@ export const lab_1 = `
   </li>
 </ol>
 
-<h2>1.2. Проверка Docker Compose</h2>
+
 <ol>
   <li>Проверьте наличие Docker Compose:<br/><code>docker-compose --version</code></li>
   <li>Если не установлен:
@@ -34,7 +34,7 @@ export const lab_1 = `
   </li>
 </ol>
 
-<h2>2.2. Создание <code>docker-compose.yml</code></h2>
+
 <ol>
   <li>Создайте файл конфигурации:<br/><code>nano docker-compose.yml</code></li>
   <li>Вставьте следующую конфигурацию:</li>
@@ -66,14 +66,14 @@ volumes:
   <li>Сохраните файл (в <code>nano</code>: Ctrl+O, Enter, Ctrl+X)</li>
 </ol>
 
-<h2>2.3. Запуск контейнера</h2>
+
 <ol>
   <li>Запустите контейнер:<br/><code>docker-compose up -d</code></li>
   <li>Проверьте статус:<br/><code>docker ps --filter "name=postgres"</code></li>
   <li>Проверьте работу PostgreSQL:<br/><code>docker exec -it postgres_docker_postgres_1 psql -U admin -d test_db -c "SELECT version();"</code></li>
 </ol>
 
-<h2>3. Подключение к БД из IntelliJ IDEA</h2>
+
 
 <h3>3.1. Настройка подключения</h3>
 <ol>
@@ -139,7 +139,7 @@ volumes:
   </li>
 </ol>
 
-<h2>4. Завершение работы</h2>
+
 <ol>
   <li>Остановите контейнер:<br/><code>docker-compose down</code></li>
   <li>Для полной очистки:<br/><code>docker-compose down -v</code></li>
