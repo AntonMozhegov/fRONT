@@ -24,7 +24,11 @@ const labs = [
     title: 'Лабораторная работа 5: Транзакции и кэширование в Spring Boot приложении с PostgreSQL',
     file: 'lab_5.html',
   },
-
+  {
+    id: '6',
+    title: 'Вопросы',
+    file: 'lab_6.html',
+  },
 ];
 
 export default labs;
