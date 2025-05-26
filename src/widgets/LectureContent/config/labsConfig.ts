@@ -26,7 +26,7 @@ const labs = [
   },
   {
     id: '6',
-    title: 'Вопросы',
+    title: 'Вопросы тестирования',
     file: 'lab_6.html',
   },
 ];

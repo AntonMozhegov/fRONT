@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -97,18 +98,37 @@ export default function HomePage() {
             <ul className={styles.list}>
                 {labs.map(({ id, title }) => (
                     <li key={id} className={styles.lectureLi}>
-                        <span className={styles.index}>{id}</span>
-                        <div className={styles.linkWrapper}>
-                            <Link
-                                className={styles.lectureLink}
-                                href={`/lab/${id}`}
-                                onMouseEnter={() => handleHover(id)}
-                                onMouseLeave={handleLeave}
-                            >
-                                <span>🔬 {title}</span>
-                                {activeFountain === id && <EmojiFountain trigger />}
-                            </Link>
-                        </div>
+                        {id === '6' ? (
+                            <>
+                                <span className={styles.index}>Тест</span>
+                                <div className={styles.linkWrapper}>
+                                    <Link
+                                        className={styles.lectureLink}
+                                        href={`/lab/${id}`}
+                                        onMouseEnter={() => handleHover(id)}
+                                        onMouseLeave={handleLeave}
+                                    >
+                                        <span>📝 {title}</span>
+                                        {activeFountain === id && <EmojiFountain trigger />}
+                                    </Link>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <span className={styles.index}>{id}</span>
+                                <div className={styles.linkWrapper}>
+                                    <Link
+                                        className={styles.lectureLink}
+                                        href={`/lab/${id}`}
+                                        onMouseEnter={() => handleHover(id)}
+                                        onMouseLeave={handleLeave}
+                                    >
+                                        <span>🔬 {title}</span>
+                                        {activeFountain === id && <EmojiFountain trigger />}
+                                    </Link>
+                                </div>
+                            </>
+                        )}
                     </li>
                 ))}
             </ul>
